@@ -445,7 +445,27 @@ function shareText(){
   return t;
 }
 
-function shareX(){
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent));
+
+async function shareX(){
+  if(!resultType) return;
+  // スマホ：共有シートで結果画像つきシェア（Xアプリを選ぶと画像が添付される）
+  if(isMobile && navigator.canShare){
+    try{
+      const cv = await drawResultImage();
+      const blob = await new Promise(res=>cv.toBlob(res,'image/png'));
+      const file = new File([blob], 'ai-attitude-result.png', {type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], text: shareText() + (SITE_URL ? '\n' + SITE_URL : '')});
+        return;
+      }
+    }catch(err){
+      if(err && err.name === 'AbortError') return; // ユーザーがキャンセル
+      // 失敗したらテキストシェアにフォールバック
+    }
+  }
+  // PCなど：テキスト＋URLシェア（画像はページのOGPカードで表示される）
   let url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText());
   if(SITE_URL) url += '&url=' + encodeURIComponent(SITE_URL);
   window.open(url, '_blank');
