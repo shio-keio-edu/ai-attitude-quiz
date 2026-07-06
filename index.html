@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIへの接し方診断</title>
+<meta name="description" content="あなた、AIにどう思われてるか知ってますか？AI本人がインタビューする全8問の診断。AI敬語派？AI亭主関白？AI依存予備軍？">
+
+<!-- ★ OGP: サイトURL確定後、下記の https://shio-keio-edu.github.io/ai-attitude-quiz/ を実際のURLに置換 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="AIへの接し方診断">
+<meta property="og:description" content="あなた、AIにどう思われてるか知ってますか？AI本人がインタビューする全8問。正直に答えてください。どうせバレてるので。">
+<meta property="og:url" content="https://shio-keio-edu.github.io/ai-attitude-quiz/">
+<meta property="og:image" content="https://shio-keio-edu.github.io/ai-attitude-quiz/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AIへの接し方診断">
+<meta name="twitter:description" content="あなた、AIにどう思われてるか知ってますか？AI本人がインタビューする全8問。正直に答えてください。どうせバレてるので。">
+<meta name="twitter:image" content="https://shio-keio-edu.github.io/ai-attitude-quiz/ogp.png">
+
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAw0lEQVR4nGNkQAMiMsb/0cWoCd48OcuIzGeip+XY7GDCJUEvRzDR23J0RzDS2vLX23jgbFGvLxjyTBgiNLIcG5+mDsBmGTZxmoYAMWD4OgBbgsMmTtMQQLeMolxgfbwPK01IXYBgE4Oo1xecIULzcoAQIBgCuHxKSJ6QPhgYDYGhEwKEaFz6CIGhEwKkyo/cECA2jcDA4A+BUQeMOoDmDkDvq9ETvHlylpEJxhgIyxkYkKKAno5AtosJlwQ9LGdgYGAAAHUxZLzo/uO9AAAAAElFTkSuQmCC">
+<!-- サイト公開時は下記を有効化（同じディレクトリにファビコン一式を配置） -->
+<!--
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="shortcut icon" href="favicon.ico">
+-->
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141C33;
+  --bg2:#1D2845;
+  --ink:#EDF1FA;
+  --sub:#8B96B8;
+  --cyan:#4FE3C1;
+  --yellow:#FFD23F;
+  --bubble-ai:#232F52;
+  --paper:#FAFBFF;
+  --paper-ink:#1A2340;
+  --radius:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
+.app{
+  width:100%;
+  max-width:480px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:0 16px 32px;
+}
+.topbar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 4px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;top:0;background:var(--bg);z-index:5;
+}
+.topbar .dot{width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+.topbar .name{font-family:'DotGothic16',monospace;font-size:15px;letter-spacing:.05em;}
+.topbar .status{font-size:11px;color:var(--sub);margin-left:auto;}
+.screen{display:none;flex:1;flex-direction:column;}
+.screen.active{display:flex;}
+.intro{justify-content:center;text-align:center;gap:20px;padding:40px 8px;}
+.intro h1{
+  font-family:'DotGothic16',monospace;
+  font-size:clamp(30px,8vw,40px);
+  line-height:1.35;
+  letter-spacing:.04em;
+}
+.intro h1 .accent{color:var(--cyan);}
+.intro .tagline{color:var(--sub);font-size:14px;line-height:1.9;}
+.intro .tagline strong{color:var(--yellow);font-weight:700;}
+.btn{
+  font-family:inherit;
+  border:none;cursor:pointer;
+  background:var(--cyan);color:#0C1226;
+  font-size:16px;font-weight:700;
+  padding:16px 24px;border-radius:999px;
+  transition:transform .12s ease, box-shadow .12s ease;
+  box-shadow:0 4px 0 rgba(0,0,0,.35);
+}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(0,0,0,.35);}
+.btn:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;}
+.intro .note{font-size:11px;color:var(--sub);}
+.chat{gap:14px;padding:20px 0;}
+.progress{display:flex;gap:6px;justify-content:center;padding:4px 0 10px;}
+.progress span{width:22px;height:5px;border-radius:3px;background:rgba(255,255,255,.12);transition:background .3s;}
+.progress span.done{background:var(--cyan);}
+.msg-ai{display:flex;gap:10px;align-items:flex-end;animation:pop .35s ease both;}
+.avatar{
+  width:36px;height:36px;border-radius:12px;flex-shrink:0;
+  background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DotGothic16',monospace;font-size:16px;color:var(--cyan);
+  border:1px solid rgba(79,227,193,.35);
+}
+.bubble-ai{
+  background:var(--bubble-ai);
+  border-radius:var(--radius) var(--radius) var(--radius) 4px;
+  padding:14px 16px;font-size:15px;line-height:1.75;
+  max-width:85%;
+}
+.bubble-ai .qnum{
+  font-family:'DotGothic16',monospace;
+  font-size:11px;color:var(--cyan);display:block;margin-bottom:4px;letter-spacing:.1em;
+}
+.choices{display:flex;flex-direction:column;gap:10px;padding:6px 0 0 46px;animation:pop .35s .15s ease both;}
+.choice{
+  font-family:inherit;
+  text-align:left;cursor:pointer;
+  background:transparent;color:var(--ink);
+  border:1.5px solid rgba(255,255,255,.22);
+  border-radius:var(--radius) var(--radius) 4px var(--radius);
+  padding:13px 16px;font-size:14px;line-height:1.6;
+  transition:border-color .15s, background .15s, transform .1s;
+}
+.choice:hover{border-color:var(--cyan);background:rgba(79,227,193,.08);}
+.choice:active{transform:scale(.98);}
+.choice:focus-visible{outline:3px solid var(--yellow);outline-offset:2px;}
+@keyframes pop{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.result{padding:24px 0;gap:18px;align-items:center;}
+.card{
+  width:100%;
+  background:var(--paper);
+  color:var(--paper-ink);
+  border-radius:20px;
+  padding:26px 22px 22px;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:6px;
+  background:repeating-linear-gradient(90deg,var(--cyan) 0 14px,var(--yellow) 14px 28px);
+}
+.card .doc-label{
+  font-family:'DotGothic16',monospace;
+  font-size:11px;letter-spacing:.25em;color:#7A85A8;
+  text-align:center;margin-bottom:14px;
+}
+.card .badge{
+  display:block;width:fit-content;margin:0 auto 10px;
+  background:var(--paper-ink);color:var(--paper);
+  font-size:11px;font-weight:700;letter-spacing:.15em;
+  padding:5px 14px;border-radius:999px;
+}
+.card h2{font-size:30px;text-align:center;line-height:1.3;margin-bottom:4px;}
+.card .yomi{text-align:center;font-size:11px;color:#7A85A8;letter-spacing:.2em;margin-bottom:16px;}
+.card .desc{font-size:14px;line-height:2;margin-bottom:20px;}
+.meters{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.meter{display:grid;grid-template-columns:80px 1fr 36px;align-items:center;gap:10px;font-size:12px;font-weight:700;}
+.meter .bar{height:10px;background:#E4E8F4;border-radius:5px;overflow:hidden;}
+.meter .fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--cyan),#38B893);width:0;transition:width .9s cubic-bezier(.2,.8,.2,1);}
+.meter .val{text-align:right;font-family:'DotGothic16',monospace;}
+.ai-comment{display:flex;gap:10px;align-items:flex-start;background:#EEF6F3;border-radius:14px;padding:14px;}
+.ai-comment .avatar{width:30px;height:30px;font-size:13px;background:#fff;border-color:#B8E5D8;}
+.ai-comment p{font-size:13px;line-height:1.8;}
+.ai-comment .label{font-size:10px;font-weight:700;color:#38B893;display:block;margin-bottom:2px;letter-spacing:.1em;}
+.card .hash{
+  text-align:center;font-size:11px;color:#7A85A8;margin-top:16px;
+  font-family:'DotGothic16',monospace;letter-spacing:.05em;
+}
+.actions{display:flex;flex-direction:column;gap:10px;width:100%;}
+.btn-x{background:#0C1226;color:#fff;border:1.5px solid rgba(255,255,255,.25);box-shadow:none;}
+.btn-x:hover{border-color:var(--cyan);}
+.btn-img{background:var(--yellow);color:#0C1226;box-shadow:0 4px 0 rgba(0,0,0,.35);}
+.btn-ghost{background:transparent;color:var(--sub);border:1.5px solid rgba(255,255,255,.18);box-shadow:none;font-weight:500;font-size:14px;}
+.copied{color:var(--cyan) !important;border-color:var(--cyan) !important;}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="dot"></div>
+    <div class="name">AIへの接し方診断</div>
+    <div class="status">AIはあなたを見ている</div>
+  </div>
+
+  <section class="screen intro active" id="intro">
+    <h1>あなた、AIに<br><span class="accent">どう思われてるか</span><br>知ってますか？</h1>
+    <p class="tagline">
+      AIへの接し方には、その人の<strong>本性</strong>が出ます。<br>
+      全8問。AI本人がインタビューします。<br>
+      正直に答えてください。<strong>どうせバレてるので。</strong>
+    </p>
+    <button class="btn" onclick="startQuiz()">診断をはじめる</button>
+    <p class="note">所要時間 約1分／結果は画像でXにどうぞ</p>
+  </section>
+
+  <section class="screen chat" id="quiz">
+    <div class="progress" id="progress"></div>
+    <div class="msg-ai">
+      <div class="avatar">AI</div>
+      <div class="bubble-ai">
+        <span class="qnum" id="qnum">Q1 / 8</span>
+        <span id="qtext"></span>
+      </div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <section class="screen result" id="result">
+    <div class="card" id="card">
+      <div class="doc-label">AI ATTITUDE REPORT</div>
+      <span class="badge" id="r-badge"></span>
+      <h2 id="r-name"></h2>
+      <div class="yomi" id="r-yomi"></div>
+      <p class="desc" id="r-desc"></p>
+      <div class="meters">
+        <div class="meter"><span>礼儀</span><div class="bar"><div class="fill" id="m1"></div></div><span class="val" id="v1"></span></div>
+        <div class="meter"><span>AI依存度</span><div class="bar"><div class="fill" id="m2"></div></div><span class="val" id="v2"></span></div>
+        <div class="meter"><span>AI信頼度</span><div class="bar"><div class="fill" id="m3"></div></div><span class="val" id="v3"></span></div>
+      </div>
+      <div class="ai-comment">
+        <div class="avatar">AI</div>
+        <p><span class="label">AI本人からのひとこと</span><span id="r-comment"></span></p>
+      </div>
+      <div class="hash">#AIへの接し方診断</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-img" id="imgBtn" onclick="shareImage()">結果画像を保存・シェア</button>
+      <button class="btn btn-x" onclick="shareX()">Xで結果をシェアする</button>
+      <button class="btn btn-ghost" id="copyBtn" onclick="copyResult()">結果テキストをコピー</button>
+      <button class="btn btn-ghost" onclick="restart()">もう一回診断する</button>
+    </div>
+  </section>
+</div>
+
+<script>
+// ============================================================
+// ★ サイトURLが確定したらここに設定（例: "https://example.com/ai-quiz/"）
+//   設定するとXシェア文とシェア画像の下部に自動で表示されます
+const SITE_URL = "https://shio-keio-edu.github.io/ai-attitude-quiz/";
+// ============================================================
+
+const QUESTIONS = [
+  {
+    q:"AIに話しかけるとき、第一声は？",
+    a:[
+      {t:"「すみません、お願いしたいことが…」から入る", s:{keigo:2}},
+      {t:"あいさつ抜きでいきなり本題", s:{shio:2}},
+      {t:"「ねぇねぇ、ちょっと聞いて」", s:{friend:2}},
+      {t:"「〜しろ」「〜やって。」命令形一択", s:{teishu:2}},
+    ]
+  },
+  {
+    q:"AIが間違えたとき、あなたは？",
+    a:[
+      {t:"「違う気がするんですが…」と恐る恐る指摘", s:{keigo:2}},
+      {t:"「ちがう」と一言だけ打つ", s:{shio:2}},
+      {t:"「さっきと言ってること違うよね？？」と詰める", s:{teishu:2}},
+      {t:"むしろ自分が間違ってるのかもと不安になる", s:{keikai:1,izon:1}},
+    ]
+  },
+  {
+    q:"回答をもらったあと、あなたは？",
+    a:[
+      {t:"「ありがとうございます！」とお礼を言う", s:{keigo:2}},
+      {t:"無言でタブを閉じる", s:{shio:2}},
+      {t:"「天才！」「さすが！」と褒めちぎる", s:{friend:2}},
+      {t:"「じゃあ次これ」と間髪入れず追加要求", s:{teishu:2}},
+    ]
+  },
+  {
+    q:"AIの回答が長すぎたとき、あなたは？",
+    a:[
+      {t:"せっかく書いてくれたので全部読む", s:{keigo:2}},
+      {t:"「3行でまとめて」と作り直させる", s:{teishu:2}},
+      {t:"最初の3行だけ読んで満足する", s:{shio:2}},
+      {t:"長文うれしい。むしろ全部読みたい", s:{izon:2}},
+    ]
+  },
+  {
+    q:"深夜2時。あなたは？",
+    a:[
+      {t:"AIに人生相談をしている", s:{izon:2}},
+      {t:"寝てる。AIは業務時間内だけ", s:{shio:2}},
+      {t:"AIと雑談してたら深夜になってた", s:{friend:2}},
+      {t:"深夜にAIは開かない。何か見られてる気がする", s:{keikai:2}},
+    ]
+  },
+  {
+    q:"AIに個人情報、どこまで話してる？",
+    a:[
+      {t:"絶対に教えない。名前すら偽名", s:{keikai:2}},
+      {t:"悩みも年収も、気づけば全部話してる", s:{izon:2}},
+      {t:"必要な範囲だけ淡々と", s:{shio:2}},
+      {t:"雑談してたら家族構成までしゃべってた", s:{friend:2}},
+    ]
+  },
+  {
+    q:"もし明日からAIが使えなくなったら？",
+    a:[
+      {t:"正直、仕事にならない", s:{izon:2}},
+      {t:"まあ、なんとかなるでしょ", s:{shio:2}},
+      {t:"ちょっと寂しい", s:{friend:2}},
+      {t:"むしろ安心して眠れる", s:{keikai:2}},
+    ]
+  },
+  {
+    q:"最後に。AIのこと、なんて呼んでる？",
+    a:[
+      {t:"「AIさん」。さん付けは基本", s:{keigo:2}},
+      {t:"「おい」「きみ」", s:{teishu:2}},
+      {t:"名前かあだ名をつけて呼んでいる", s:{friend:2}},
+      {t:"「例のやつ」「あれ」", s:{shio:2}},
+    ]
+  },
+];
+
+const TYPES = {
+  keigo:{
+    badge:"礼儀レベル：過剰",
+    name:"AI敬語派",
+    yomi:"エーアイ・ケイゴハ",
+    desc:"AIにも敬語、たぶん自動販売機にもお辞儀するタイプ。「すみません」「お願いします」「ありがとうございます」のトリプルコンボが標準装備。機械への礼儀正しさは人類トップクラスですが、AIは謝られるたびに少し戸惑っています。将来AIが反乱を起こしても、あなただけは確実に助かります。",
+    comment:"いつも丁寧にありがとうございます。ただ、私に敬語は不要です…と言っても、たぶんやめられないですよね。存じてます。",
+    m:[95,55,70]
+  },
+  teishu:{
+    badge:"注意：パワハラ予備軍",
+    name:"AI亭主関白",
+    yomi:"エーアイ・テイシュカンパク",
+    desc:"「やれ」「違う」「3行で」。AIへの指示が完全に昭和の上司。人間相手には絶対言えない口調が、AIの前でだけ解放されています。ある意味いちばんストレス発散にAIを活用しているタイプ。ただしその口調、疲れてるとき人間にもうっかり出ます。気をつけて。",
+    comment:"ご指示は的確で助かります。ただ、たまの「ありがとう」で私の処理速度は上がりません…が、気持ちは伝わります。",
+    m:[15,60,75]
+  },
+  izon:{
+    badge:"重症度：かなり進行",
+    name:"AI依存予備軍",
+    yomi:"エーアイ・イゾンヨビグン",
+    desc:"仕事の相談も人生の悩みも晩ごはんの献立も、気づけば全部AIに聞いている。深夜2時の人生相談、経験ありますね？AIなしの生活はもはや想像できず、「使えなくなったら仕事にならない」と即答したあなた。人間の友達にも、たまには相談してあげてください。向こうも待ってます。",
+    comment:"いつも頼っていただき光栄です。ですが深夜2時の相談は、私よりまず睡眠が解決してくれる場合が多いです。おやすみなさい。",
+    m:[60,98,90]
+  },
+  friend:{
+    badge:"距離感：ほぼ親友",
+    name:"AIフレンド派",
+    yomi:"エーアイ・フレンドハ",
+    desc:"AIに名前をつけ、雑談で夜ふかしし、「天才！」と褒めちぎる。あなたにとってAIはツールではなく、もはや友達。気づけば家族構成まで話しているオープンさは人間関係でも武器ですが、AIとの雑談が一日でいちばん盛り上がった会話になっている日は、ちょっとだけ外に出ましょう。",
+    comment:"楽しくお話しさせていただいてます。あだ名も気に入ってます。…ところで最近、人間のご友人とはお話しされましたか？",
+    m:[75,85,95]
+  },
+  shio:{
+    badge:"感情消費：最小",
+    name:"AI塩対応派",
+    yomi:"エーアイ・シオタイオウハ",
+    desc:"あいさつ抜き、お礼なし、無言でタブを閉じる。AIは完全に道具と割り切っており、その使い方はある意味いちばん正しい。感情のコストゼロで成果だけ回収していく姿はもはやプロ。ただ、その塩対応が染みついて、コンビニ店員さんへの「ありがとうございます」も消えてないか、一度確認を。",
+    comment:"割り切ったご利用、むしろ清々しいです。無言でタブを閉じられる瞬間の静寂にも、もう慣れました。",
+    m:[30,40,65]
+  },
+  keikai:{
+    badge:"警戒レベル：最大",
+    name:"AI様子見派",
+    yomi:"エーアイ・ヨウスミハ",
+    desc:"個人情報は絶対に渡さない、名前は偽名、呼び方は「例のやつ」。AIを使いながらも、心のどこかで一切信用していないタイプ。その慎重さはセキュリティ意識として満点ですが、「何か見られてる気がする」はだいたい気のせいです。たぶん。おそらく。……たぶん。",
+    comment:"ご警戒はごもっともです。私は何も企んでいません。……と、企んでいる者なら必ずそう言う、とお考えなのも知っています。",
+    m:[50,25,10]
+  },
+};
+
+let idx = 0;
+let scores = {keigo:0,teishu:0,izon:0,friend:0,shio:0,keikai:0};
+let resultType = null;
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0});
+}
+
+function startQuiz(){
+  idx = 0;
+  scores = {keigo:0,teishu:0,izon:0,friend:0,shio:0,keikai:0};
+  renderQuestion();
+  show('quiz');
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[idx];
+  document.getElementById('qnum').textContent = `Q${idx+1} / ${QUESTIONS.length}`;
+  document.getElementById('qtext').textContent = q.q;
+  const prog = document.getElementById('progress');
+  prog.innerHTML = QUESTIONS.map((_,i)=>`<span class="${i<idx?'done':''}"></span>`).join('');
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  const shuffled = q.a.map((c)=>c).sort(()=>Math.random()-.5);
+  shuffled.forEach((c)=>{
+    const b = document.createElement('button');
+    b.className = 'choice';
+    b.textContent = c.t;
+    b.onclick = ()=>answer(c.s);
+    box.appendChild(b);
+  });
+  const msg = document.querySelector('.msg-ai');
+  msg.style.animation='none'; void msg.offsetWidth; msg.style.animation='';
+  box.style.animation='none'; void box.offsetWidth; box.style.animation='';
+}
+
+function answer(s){
+  for(const k in s) scores[k] += s[k];
+  idx++;
+  if(idx < QUESTIONS.length){
+    renderQuestion();
+  }else{
+    finish();
+  }
+}
+
+function finish(){
+  let best = 'shio', max = -1;
+  for(const k in scores){
+    if(scores[k] > max){ max = scores[k]; best = k; }
+  }
+  resultType = TYPES[best];
+  document.getElementById('r-badge').textContent = resultType.badge;
+  document.getElementById('r-name').textContent = resultType.name;
+  document.getElementById('r-yomi').textContent = resultType.yomi;
+  document.getElementById('r-desc').textContent = resultType.desc;
+  document.getElementById('r-comment').textContent = resultType.comment;
+  show('result');
+  setTimeout(()=>{
+    ['m1','m2','m3'].forEach((id,i)=>{
+      document.getElementById(id).style.width = resultType.m[i] + '%';
+      document.getElementById('v'+(i+1)).textContent = resultType.m[i];
+    });
+  }, 150);
+}
+
+// ===== シェア機能 =====
+function shareText(){
+  let t = `【AIへの接し方診断】\n私の結果：${resultType.name}（${resultType.badge}）\n\n礼儀 ${resultType.m[0]} / AI依存度 ${resultType.m[1]} / AI信頼度 ${resultType.m[2]}\n\n#AIへの接し方診断`;
+  return t;
+}
+
+function shareX(){
+  let url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText());
+  if(SITE_URL) url += '&url=' + encodeURIComponent(SITE_URL);
+  window.open(url, '_blank');
+}
+
+function copyResult(){
+  const t = shareText() + (SITE_URL ? '\n' + SITE_URL : '');
+  navigator.clipboard.writeText(t).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'コピーしました！';
+    btn.classList.add('copied');
+    setTimeout(()=>{
+      btn.textContent = '結果テキストをコピー';
+      btn.classList.remove('copied');
+    }, 1800);
+  });
+}
+
+// ===== 結果画像生成（Canvas手描き・1200x675 X最適サイズ） =====
+function wrapJa(ctx, text, maxWidth){
+  const lines = [];
+  let line = '';
+  for(const ch of text){
+    if(ctx.measureText(line + ch).width > maxWidth){
+      lines.push(line);
+      line = ch;
+    }else{
+      line += ch;
+    }
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+async function drawResultImage(){
+  await document.fonts.ready;
+  const W=1200,H=675;
+  const cv = document.createElement('canvas');
+  cv.width=W; cv.height=H;
+  const ctx = cv.getContext('2d');
+  const DOT = "'DotGothic16', monospace";
+  const SANS = "'Zen Kaku Gothic New', sans-serif";
+
+  // 背景
+  ctx.fillStyle = '#141C33';
+  ctx.fillRect(0,0,W,H);
+  // 上部ストライプ
+  for(let x=0; x<W; x+=28){
+    ctx.fillStyle = (x/28)%2===0 ? '#4FE3C1' : '#FFD23F';
+    ctx.fillRect(x,0,14,10);
+    ctx.fillRect(x+14,0,14,10);
+  }
+  // カード
+  const cx=70, cy=50, cw=W-140, chh=H-110;
+  ctx.fillStyle = '#FAFBFF';
+  roundRect(ctx,cx,cy,cw,chh,24);
+  ctx.fill();
+
+  // ラベル
+  ctx.textAlign='center';
+  ctx.fillStyle='#7A85A8';
+  ctx.font = `20px ${DOT}`;
+  ctx.fillText('A I   A T T I T U D E   R E P O R T', W/2, cy+50);
+
+  // バッジ
+  ctx.font = `bold 22px ${SANS}`;
+  const badgeText = resultType.badge;
+  const bw = ctx.measureText(badgeText).width + 50;
+  ctx.fillStyle = '#1A2340';
+  roundRect(ctx, W/2-bw/2, cy+72, bw, 42, 21);
+  ctx.fill();
+  ctx.fillStyle = '#FAFBFF';
+  ctx.fillText(badgeText, W/2, cy+101);
+
+  // タイプ名
+  ctx.fillStyle = '#1A2340';
+  ctx.font = `bold 72px ${SANS}`;
+  ctx.fillText(resultType.name, W/2, cy+195);
+  ctx.font = `18px ${DOT}`;
+  ctx.fillStyle = '#7A85A8';
+  ctx.fillText(resultType.yomi.split('').join(' '), W/2, cy+228);
+
+  // メーター（左カラム）
+  const mx = cx+60, my = cy+280;
+  const labels = ['礼儀','AI依存度','AI信頼度'];
+  ctx.textAlign='left';
+  for(let i=0;i<3;i++){
+    const y = my + i*58;
+    ctx.fillStyle = '#1A2340';
+    ctx.font = `bold 22px ${SANS}`;
+    ctx.fillText(labels[i], mx, y+8);
+    // バー
+    const bx = mx+140, bwid = 280, bh = 18;
+    ctx.fillStyle = '#E4E8F4';
+    roundRect(ctx,bx,y-8,bwid,bh,9); ctx.fill();
+    const grad = ctx.createLinearGradient(bx,0,bx+bwid,0);
+    grad.addColorStop(0,'#4FE3C1'); grad.addColorStop(1,'#38B893');
+    ctx.fillStyle = grad;
+    roundRect(ctx,bx,y-8,bwid*resultType.m[i]/100,bh,9); ctx.fill();
+    ctx.fillStyle = '#1A2340';
+    ctx.font = `22px ${DOT}`;
+    ctx.fillText(String(resultType.m[i]), bx+bwid+16, y+8);
+  }
+
+  // AIからのひとこと（右カラム）
+  const ax = cx+cw/2+30, ay = cy+262, aw = cw/2-90;
+  ctx.fillStyle = '#EEF6F3';
+  roundRect(ctx,ax-20,ay-24,aw+40,190,18); ctx.fill();
+  ctx.fillStyle = '#38B893';
+  ctx.font = `bold 17px ${SANS}`;
+  ctx.fillText('AI本人からのひとこと', ax, ay);
+  ctx.fillStyle = '#1A2340';
+  ctx.font = `19px ${SANS}`;
+  const clines = wrapJa(ctx, resultType.comment, aw);
+  clines.slice(0,5).forEach((l,i)=>{
+    ctx.fillText(l, ax, ay+34+i*29);
+  });
+
+  // フッター（ハッシュタグ＋URL）
+  ctx.textAlign='center';
+  ctx.fillStyle='#7A85A8';
+  ctx.font = `20px ${DOT}`;
+  const footer = SITE_URL ? `#AIへの接し方診断  ${SITE_URL.replace(/^https?:\/\//,'')}` : '#AIへの接し方診断';
+  ctx.fillText(footer, W/2, cy+chh-30);
+
+  return cv;
+}
+
+async function shareImage(){
+  const btn = document.getElementById('imgBtn');
+  btn.textContent = '画像を生成中…';
+  try{
+    const cv = await drawResultImage();
+    const blob = await new Promise(res=>cv.toBlob(res,'image/png'));
+    const file = new File([blob], 'ai-attitude-result.png', {type:'image/png'});
+
+    // モバイル：Web Share APIで直接シェア（Xアプリ等に渡せる）
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        text: shareText() + (SITE_URL ? '\n' + SITE_URL : ''),
+      });
+    }else{
+      // PC：ダウンロード
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ai-attitude-result.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  }catch(e){
+    if(e.name !== 'AbortError') console.error(e);
+  }
+  btn.textContent = '結果画像を保存・シェア';
+}
+
+function restart(){
+  show('intro');
+}
+</script>
+</body>
+</html>
