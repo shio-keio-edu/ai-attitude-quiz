@@ -1,1 +1,1 @@
-# ai-relationship
+# ai-attitude-quiz
